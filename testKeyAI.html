@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Test Gemini API Key</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      background: #f5f6fa;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px;
+    }
+    h1 { color: #333; }
+    .box {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      width: 480px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    input, textarea, button {
+      width: 100%;
+      font-size: 15px;
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    pre {
+      background: #f4f4f4;
+      padding: 10px;
+      border-radius: 6px;
+      max-height: 300px;
+      overflow: auto;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔑 Test Gemini API Key</h1>
+  <div class="box">
+    <label>API Key của bạn:</label>
+    <input id="apiKey" placeholder="Dán key vào đây...">
+
+    <label>Model:</label>
+    <input id="model" value="gemini-2.5-flash">
+
+    <label>Tin nhắn:</label>
+    <textarea id="prompt">Xin chào Gemini, hãy trả lời 'OK' nếu key này hoạt động!</textarea>
+
+    <button id="sendBtn">Gửi yêu cầu</button>
+
+    <h3>Kết quả:</h3>
+    <pre id="result">Chưa gửi yêu cầu nào...</pre>
+  </div>
+
+  <script>
+    document.getElementById("sendBtn").addEventListener("click", async () => {
+      const apiKey = document.getElementById("apiKey").value.trim();
+      const model = document.getElementById("model").value.trim();
+      const prompt = document.getElementById("prompt").value.trim();
+      const resultEl = document.getElementById("result");
+
+      if (!apiKey) {
+        alert("⚠️ Bạn cần nhập API key!");
+        return;
+      }
+
+      resultEl.textContent = "⏳ Đang gửi yêu cầu...";
+      try {
+        const endpoint = `https://generativeai.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+        const body = {
+          contents: [{ role: "user", parts: [{ text: prompt }] }],
+          temperature: 0.2,
+          maxOutputTokens: 100
+        };
+
+        const res = await fetch(endpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body)
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+          resultEl.textContent = `❌ Lỗi HTTP ${res.status}: ${JSON.stringify(data, null, 2)}`;
+          return;
+        }
+
+        const text =
+          data?.candidates?.[0]?.content?.parts?.[0]?.text ||
+          JSON.stringify(data, null, 2);
+
+        resultEl.textContent = `✅ Phản hồi:\n\n${text}`;
+      } catch (err) {
+        resultEl.textContent = `⚠️ Lỗi: ${err.message}`;
+        console.error(err);
+      }
+    });
+  </script>
+</body>
+</html>

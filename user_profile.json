@@ -1,0 +1,16 @@
+[
+  {
+    "id": "Nghia_1",
+    "name": "Nguyễn Trung Nghĩa",
+    "birthday": "23/11/2004",
+    "age": 20,
+    "created_at": "2025-10-20T20:36:19.846242"
+  },
+  {
+    "id": "Hoa_Truong2004",
+    "name": "Trương Quốc Hòa",
+    "birthday": "01/01/2002",
+    "age": 23,
+    "created_at": "2025-10-20T20:40:56.874841"
+  }
+]
